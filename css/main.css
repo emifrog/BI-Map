@@ -29,13 +29,13 @@ code {
     min-width: 240px;
     z-index: 1;
     border-radius: 4px;
-    border: 1px solid /*rgba(255, 0, 0, 0.747)*/;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     transition: width .25s, min-width .25s
 }
 
 .react-geocoder input {
     width: 100%;
-    background-image: url(img/search.png);
+    background-image: url(../img/search.png);
     background-size: contain;
     background-repeat: no-repeat;
     background-position: 100%;
