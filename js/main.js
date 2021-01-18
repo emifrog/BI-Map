@@ -62,13 +62,13 @@
                         for (var o = arguments.length, u = new Array(o), m = 0; m < o; m++) u[m] = arguments[m];
                         return (e = i.call.apply(i, [this].concat(u))).state = {
                             viewport: {
-                                latitude: 43.70385,
-                                longitude: 7.26858,
+                                latitude: 43.70452,
+                                longitude: 7.26839,
                                 zoom: 17
                             },
                             caserne: {
-                                latitude: 43.70385,
-                                longitude: 7.26858,
+                                latitude: 43.70452,
+                                longitude: 7.26839,
                                 zoom: 17
                             },
                             intervention: null,
@@ -153,7 +153,7 @@
                             }, n.a.createElement("button", {
                                 className: "marker-btn"
                             }, n.a.createElement("img", {
-                                src: "img/caserne.png",
+                                src: "img/caserne2.png",
                                 alt: ""
                             }))), this.state.intervention ? n.a.createElement(p.a, {
                                 key: this.state.id,
