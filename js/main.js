@@ -127,8 +127,8 @@
                                 o = i.caserne,
                                 u = i.intervention,
                                 m = {
-                                    backgroundColor: "#696969",
-                                    color: "#FF0000"
+                                    backgroundColor: "#FF0000",
+                                    color: "#f8f9fa"
                                 };
                             return n.a.createElement("div", null, n.a.createElement(p.d, Object.assign({}, r, t, P, {
                                 mapStyle: "mapbox://styles/cityana2s/cjjqxrao50zxo2ro0lzwx03lw",
@@ -215,6 +215,12 @@
                                 style: m
                             }, n.a.createElement(S.a, {
                                 icon: Y.c
+                            })), n.a.createElement(c.a, {
+                                text: "F.I.R.E",
+                                onClick: this.goCaserne,
+                                style: m
+                            }, n.a.createElement(S.a, {
+                                icon: Y.d
                             }))))
                         }
                     }]), t
@@ -243,4 +249,3 @@
         [188, 1, 2]
     ]
 ]);
-//# sourceMappingURL=main.841d1bac.chunk.js.map
