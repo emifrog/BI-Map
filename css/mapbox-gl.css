@@ -435,7 +435,7 @@ a.mapboxgl-ctrl-logo.mapboxgl-compact {
         padding: 2px 24px 2px 0;
         margin: 10px;
         position: relative;
-        background-color: #fff;
+        /*background-color: #fff;*/
         border-radius: 12px
     }
 

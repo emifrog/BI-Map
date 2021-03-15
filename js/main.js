@@ -8,7 +8,7 @@
         },
         193: function (e, i, t) {},
         194: function (e, i, t) {
-            e.exports = t.p + "static/media/logo.5d5d9eef.svg"
+            e.exports = t.p + "img/logo.svg"
         },
         195: function (e, i, t) {},
         407: function (e, i) {},
@@ -186,7 +186,7 @@
                                     }
                                 }, n.a.createElement("img", {
                                     src: "img/bi_30.png",
-                                    alt: ""
+                                    alt: "bi"
                                 })))
                             })), this.state.selectedBI ? n.a.createElement(p.b, {
                                 latitude: parseFloat(this.state.selectedBI.latitude),
