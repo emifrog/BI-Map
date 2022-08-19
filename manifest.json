@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "img/32x32.png",
+      "src": "images/32x32.png",
       "type": "image/png",
       "sizes": "32x32"
     },
     {
-      "src": "img/caserne.png",
+      "src": "images/caserne.png",
       "type": "image/png",
       "sizes": "500x500"
     }
