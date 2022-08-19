@@ -1,6 +1,7 @@
 {
   "description": "Toutes BI du CIS Hancy",
   "name": "BI Hancy",
+  "short_name": "BI Hancy",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,7 +19,7 @@
       "sizes": "500x500"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
