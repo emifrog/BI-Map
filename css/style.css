@@ -50,6 +50,7 @@ code {
     z-index: 1;
     background-color: #fff;
     border: 1px solid #000;
+    border-radius: 10px;
     width: 100%
 }
 
