@@ -24,7 +24,7 @@ getJSON('https://main--bi-hancy-06000.netlify.app/json/hancy.json',
       if (err !== null) {
         alert('Something went wrong: ' + err);
       } else {
-        alert('Your query count: ' + data.query.count);
+        alert('Your query count: ');
       }
     });
         },
