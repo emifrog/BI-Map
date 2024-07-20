@@ -19,12 +19,13 @@ var getJSON = function(url, callback) {
     xhr.send();
 };
 
-getJSON('https://main--bi-hancy-06000.netlify.app/json/hancy.json',
+getJSON('http://192.168.1.25:5500/json/hancy.json',
     function(err, data) {
       if (err !== null) {
-        alert('Something went wrong: ' + err);
+        console.log('Something went wrong: ' + err);
       } else {
-        alert('Your query count: ');
+        console.log(data);
+        console.log('Your query count: ');
       }
     });
         },
