@@ -19,13 +19,13 @@ var getJSON = function(url, callback) {
     xhr.send();
 };
 
-getJSON('http://192.168.1.25:5500/json/hancy.json',
+getJSON('http://192.168.0.106:5500/json/hancy.json',
     function(err, data) {
       if (err !== null) {
         console.log('Something went wrong: ' + err);
       } else {
-        console.log(data);
-        console.log('Your query count: ');
+        console.log(data.HANCY);
+        console.log('Your query count: ' + data.HANCY.length);
       }
     });
         },
