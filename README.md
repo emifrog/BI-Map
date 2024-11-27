@@ -1,3 +1,3 @@
 # BI Map
 
-Cartographie des bouches du 06
+Cartographie des bouches d'incendie du 06
