@@ -143,3 +143,57 @@ form button:hover {
   transform: translateY(-2px);
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
 }
+
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .contact {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .contact h1 {
+        font-size: 2rem;
+    }
+
+    .input-box {
+        width: 100%;
+    }
+
+    .field .item {
+        padding: 15px;
+        font-size: 14px;
+    }
+
+    .buttons-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    form button,
+    .button-link {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .contact h1 {
+        font-size: 1.8rem;
+    }
+
+    .contact p {
+        font-size: 14px;
+    }
+
+    .field .item {
+        padding: 12px;
+    }
+
+    form button,
+    .button-link {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
