@@ -3,9 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documents</title>
+    <title>Fiches FIRE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/8d747dca8a.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/fire.css">
 </head>
-<body>
-    <h1>F.I.R.E</h1>
+<body class="search-body">
+    <div class="search-container">
+        <h1>Search FIRE</h1>
+            <form id="searchForm" class="searchForm" role="search">
+                <input 
+                type="search" 
+                id="searchText" 
+                class="searchText" 
+                name="searchText" 
+                autocomplete="off"
+                role="searchbox"
+                required>
+                <button class="searchButton">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </button>
+            </form>
+    </div>
+
 </body>
 </html>
