@@ -50,6 +50,8 @@ searchJS.onload = function () {
         ['50', '100'].forEach((radius, index) => {
             const id = `search-radius-${radius}`;
             const color = radius === '50' ? '#ff0000' : '#00ff00';
+            const radiusInPixels = radius === '50' ? 25 : 50; // La moitié car c'est un rayon
+
             
             map.addSource(id, {
                 'type': 'geojson',
@@ -69,8 +71,12 @@ searchJS.onload = function () {
                 'paint': {
                     'circle-radius': {
                         'stops': [
-                            [0, 0],
-                            [20, parseInt(radius) * 2]
+                            [14, radiusInPixels / 4], // Zoom niveau 14
+                            [15, radiusInPixels / 2], // Zoom niveau 15
+                            [16, radiusInPixels],     // Zoom niveau 16
+                            [17, radiusInPixels * 2], // Zoom niveau 17
+                            [18, radiusInPixels * 4], // Zoom niveau 18
+                            [19, radiusInPixels * 8]  // Zoom niveau 19
                         ],
                         'base': 2
                     },
