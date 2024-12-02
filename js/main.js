@@ -182,4 +182,3 @@ function handleCentrerClick() {
         alert('Aucune recherche effectuée');
     }
 }
-

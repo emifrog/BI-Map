@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -17,8 +19,10 @@
 }
 
 .search-container {
-
-    min-height: 100vh;
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 h1 {
@@ -49,33 +53,57 @@ input, button {
 }
 
 .searchText {
-    color: #1e293b;
-    font-size: 1.2rem;
-    flex-grow: 1;
-    padding: 0.2rem 0.15rem 0.2rem 0.5rem;
-    border: none;
-    background: transparent;
-    outline: none;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
 .searchButton {
-    padding: 0.2rem 0.5rem 0.2rem 0.5rem;
-    background: transparent;
-    outline: none;
+    background-color: #007BFF;
+    color: white;
     border: none;
+    padding: 10px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 1.2rem;
+    margin-left: 2px;
 }
 
-.searchButton:hover {
-    background-color: #1e293b;
-    color: #ededed;
-    border-radius: 0 20px 20px 0;
+.search-input {
+    display: flex;
+    align-items: center;
+    position: relative;
 }
 
-.searchButton:focus {
-    color: #ededed;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+.autocom-box {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.autocom-box li {
+    padding: 10px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.autocom-box li:hover {
+    background-color: #f0f0f0;
+}
+
+.autocom-box li a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 @media only screen and (max-width: 768px) {
@@ -83,3 +111,4 @@ input, button {
         font-size: 2rem;
     }
 }
+
