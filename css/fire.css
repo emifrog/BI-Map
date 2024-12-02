@@ -34,7 +34,7 @@ h1 {
 }
 
 input, button {
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 .offscreen {
@@ -58,6 +58,7 @@ input, button {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    /*font-family: 'Poppins', sans-serif;*/
 }
 
 .searchButton {
