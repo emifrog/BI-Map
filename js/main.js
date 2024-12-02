@@ -92,7 +92,7 @@ searchJS.onload = function () {
 
 function handleFireClick() {
     // Ajoutez ici la logique pour le bouton F.I.R.E
-    window.open('fire.html', '_blank', "height=500,width=500");	
+    window.open('fire.html', '_blank', "height=600,width=500");	
 }
 
 let isMeasuring = false;

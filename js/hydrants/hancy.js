@@ -5887,7 +5887,7 @@ for (const feature of newFeatures) {
 
   // create a HTML element for each feature
   const el = document.createElement("div");
-  el.className = "marker";
+  el.className = "marker-bi";
 
   // make a marker for each feature and add to the map
 

@@ -98,16 +98,16 @@ h3 {
   margin-right: 10px;
 }
 
-.marker {
-  background-image: url('images/bi.png');
+.marker-caserne {
+  background-image: url('images/casque.png');
   background-size: cover;
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   cursor: pointer;
 }
 
-.marker {
+.marker-bi {
   background-image: url('images/bi.png');
   background-size: cover;
   width: 25px;
