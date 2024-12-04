@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     async function loadSuggestions() {
         try {
-            const response = await fetch('/data/fire.json');
+            const response = await fetch('/data/fires.json');
             allSuggestions = await response.json();
         } catch (error) {
             console.error('Erreur lors du chargement des suggestions:', error);
