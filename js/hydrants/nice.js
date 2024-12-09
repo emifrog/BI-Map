@@ -26651,7 +26651,7 @@ for (const feature of geojsonnice.features) {
 
   // create a HTML element for each feature
   const el = document.createElement('div');
-  el.className = 'marker-BI :';
+  el.className = 'marker-bi';
 
   // make a marker for each feature and add to the map
   
