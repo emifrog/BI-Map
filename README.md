@@ -38,6 +38,12 @@ BI Map est une application web cartographique permettant de visualiser et gérer
 - Fonction de recentrage rapide
 - Formulaire de contact intégré
 
+### Performance et Accessibilité
+- Service Worker pour le mode hors connexion
+- Mise en cache intelligente des ressources
+- Chargement optimisé des ressources critiques
+- Compatibilité mobile et tablette
+
 ## 🛠️ Technologies
 
 - **Frontend**:
@@ -46,6 +52,7 @@ BI Map est une application web cartographique permettant de visualiser et gérer
   - [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/) v3.7.0
   - [Turf.js](https://turfjs.org/) pour les calculs géographiques
   - [Font Awesome](https://fontawesome.com/) pour l'interface
+  - Service Worker pour le support hors ligne
 
 ## 🚀 Installation
 

@@ -1,6 +1,7 @@
-<!doctype html>
-<html lang="fr">
-  <head>
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Cartographie des bouches d'incendie du 06" />
@@ -10,32 +11,49 @@
     <link rel="preload" href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" as="style">
     <link rel="preload" href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js" as="script">
     <link rel="preload" href="style.css" as="style">
-    
+
     <!-- Favicon -->
     <link rel="shortcut icon" href="images/favicon.ico" sizes="32x32" />
-    
+
     <!-- Styles critiques -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
-    
+
+    <script>
+        // Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker enregistré avec succès:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de l\'enregistrement du Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+
     <!-- Scripts critiques -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
-    
+
     <!-- Styles non-critiques -->
-    <link href="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-    
+    <link href="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css" rel="stylesheet" media="print"
+        onload="this.media='all'">
+
     <!-- Scripts non-critiques avec defer -->
     <script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.22/web.js"></script>
     <script defer src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
     <script defer src="https://kit.fontawesome.com/8d747dca8a.js" crossorigin="anonymous"></script>
-  </head>
-  <body>    
+</head>
+
+<body>
 
     <div id="map"></div>
     <div id="search-box-container">
 
-    <div class="Suggestion"></div>
-</div>
+        <div class="Suggestion"></div>
+    </div>
     <div class="fab-container">
         <div class="fab fab-icon-holder">
             <i class="fas fas fa-plus"></i>
@@ -81,6 +99,7 @@
     <script defer src="js/hydrants/nice.js"></script>
     <!--<script src="js/hydrants/hancy.js"></script>    
     <script src="js/casernes.js"></script>-->
-      
-  </body>
+
+</body>
+
 </html>
