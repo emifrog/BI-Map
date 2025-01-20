@@ -26663,7 +26663,7 @@ for (const feature of geojsonnice.features) {
            offset: 25
         }) // add popups
         .setHTML(
-           `<h3>${feature.properties.title}${feature.properties.num}</h3>`
+           `<h3 class="namebi">${feature.properties.title}${feature.properties.num}</h3>`
         )
      )
      .addTo(map);
