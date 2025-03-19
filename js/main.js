@@ -67,6 +67,7 @@ const state = {
 // Configuration de Mapbox
 mapboxgl.accessToken = MAP_CONFIG.accessToken;
 
+// Initialisation de la carte avec les coordonnées par défaut
 const map = new mapboxgl.Map({
     container: elements.map,
     style: 'mapbox://styles/mapbox/streets-v12',
@@ -81,6 +82,26 @@ const map = new mapboxgl.Map({
 
 // Cache de l'élément canvas après l'initialisation de la carte
 elements.mapCanvas = map.getCanvas();
+
+// Ajouter un contrôle de géolocalisation
+const geolocateControl = new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true,
+    showUserHeading: true
+});
+
+map.addControl(geolocateControl);
+
+// Utiliser la géolocalisation dès le chargement de la carte
+map.on('load', () => {
+    // Vérifier si la géolocalisation est disponible
+    if (navigator.geolocation) {
+        // Déclencher automatiquement la géolocalisation
+        geolocateControl.trigger();
+    }
+});
 
 /**
  * Initialise la fonctionnalité de recherche avec Mapbox Search Box
