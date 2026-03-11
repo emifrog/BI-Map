@@ -1,12 +1,5 @@
 /**
  * Configuration principale de la carte Mapbox
- * @typedef {Object} MapConfig
- * @property {string} accessToken - Token d'accès Mapbox
- * @property {[number, number]} defaultCenter - Coordonnées du centre par défaut [longitude, latitude]
- * @property {number} defaultZoom - Niveau de zoom par défaut
- * @property {[[number, number], [number, number]]} maxBounds - Limites de la carte [[SO], [NE]]
- * @property {number} minZoom - Niveau de zoom minimum
- * @property {number} maxZoom - Niveau de zoom maximum
  */
 const MAP_CONFIG = {
     accessToken: 'pk.eyJ1IjoiZW1pZnJvZyIsImEiOiJjbDU4NGx6ZncxemZpM2VwcHpvbXQ0ZTduIn0.8Rqf1sB2mTRtqQbrgPUy2Q',
@@ -19,12 +12,6 @@ const MAP_CONFIG = {
 
 /**
  * Configuration de la recherche
- * @typedef {Object} SearchConfig
- * @property {string} types - Types d'éléments recherchables
- * @property {string} language - Code de langue pour les résultats
- * @property {string} country - Code pays pour limiter la recherche
- * @property {[number, number, number, number]} bbox - Boîte englobante pour la recherche [O, S, E, N]
- * @property {number} zoom - Niveau de zoom après la recherche
  */
 const SEARCH_CONFIG = {
     types: 'address,poi',
@@ -35,26 +22,21 @@ const SEARCH_CONFIG = {
 };
 
 /**
+ * Fichiers de données hydrants à charger
+ */
+const HYDRANT_FILES = ['data/nice.json', 'data/bv.json'];
+
+/**
  * Cache des éléments DOM fréquemment utilisés
- * @typedef {Object} DOMElements
- * @property {HTMLElement} map - Conteneur de la carte
- * @property {HTMLElement} searchContainer - Conteneur de la barre de recherche
- * @property {HTMLCanvasElement} mapCanvas - Canvas de la carte Mapbox
  */
 const elements = {
     map: document.getElementById('map'),
     searchContainer: document.getElementById('search-box-container'),
-    mapCanvas: null // Sera initialisé après la création de la carte
+    mapCanvas: null
 };
 
 /**
  * État global de l'application
- * @typedef {Object} AppState
- * @property {boolean} isMeasuring - Indique si le mode mesure est actif
- * @property {Array<LngLat>} measurePoints - Points de mesure
- * @property {?[number, number]} lastSearchCoordinates - Dernières coordonnées recherchées
- * @property {?MapboxSearchBox} searchBox - Instance de la boîte de recherche
- * @property {Set<string>} currentLayers - Ensemble des couches actuellement affichées
  */
 const state = {
     isMeasuring: false,
@@ -67,7 +49,7 @@ const state = {
 // Configuration de Mapbox
 mapboxgl.accessToken = MAP_CONFIG.accessToken;
 
-// Initialisation de la carte avec les coordonnées par défaut
+// Initialisation de la carte
 const map = new mapboxgl.Map({
     container: elements.map,
     style: 'mapbox://styles/mapbox/streets-v12',
@@ -80,10 +62,9 @@ const map = new mapboxgl.Map({
     preserveDrawingBuffer: true
 });
 
-// Cache de l'élément canvas après l'initialisation de la carte
 elements.mapCanvas = map.getCanvas();
 
-// Ajouter un contrôle de géolocalisation
+// Contrôle de géolocalisation
 const geolocateControl = new mapboxgl.GeolocateControl({
     positionOptions: {
         enableHighAccuracy: true
@@ -94,18 +75,66 @@ const geolocateControl = new mapboxgl.GeolocateControl({
 
 map.addControl(geolocateControl);
 
-// Utiliser la géolocalisation dès le chargement de la carte
+/**
+ * Charge et fusionne les données GeoJSON des hydrants
+ */
+const loadHydrants = async () => {
+    try {
+        const responses = await Promise.all(
+            HYDRANT_FILES.map(file => fetch(file).then(r => {
+                if (!r.ok) throw new Error(`Erreur chargement ${file}: ${r.status}`);
+                return r.json();
+            }))
+        );
+
+        // Fusionner toutes les features dans un seul GeoJSON
+        const merged = {
+            type: 'FeatureCollection',
+            features: responses.flatMap(data => data.features)
+        };
+
+        addHydrantMarkers(merged);
+    } catch (error) {
+        console.error('Erreur lors du chargement des hydrants:', error);
+    }
+};
+
+/**
+ * Ajoute les marqueurs HTML pour les hydrants
+ */
+const addHydrantMarkers = (geojson) => {
+    for (const feature of geojson.features) {
+        const el = document.createElement('div');
+        el.className = 'marker-bi';
+
+        new mapboxgl.Marker(el)
+            .setLngLat(feature.geometry.coordinates)
+            .setPopup(
+                new mapboxgl.Popup({ offset: 25 })
+                    .setHTML(`<h3 class="namebi">${feature.properties.title}${feature.properties.num}</h3>`)
+            )
+            .addTo(map);
+    }
+};
+
+// Chargement au démarrage
 map.on('load', () => {
-    // Vérifier si la géolocalisation est disponible
+    // Géolocalisation
     if (navigator.geolocation) {
-        // Déclencher automatiquement la géolocalisation
         geolocateControl.trigger();
     }
+
+    // Charger les hydrants
+    loadHydrants();
+});
+
+// Gestion des erreurs de géolocalisation
+geolocateControl.on('error', (e) => {
+    console.warn('Géolocalisation indisponible:', e.message);
 });
 
 /**
- * Initialise la fonctionnalité de recherche avec Mapbox Search Box
- * @function initSearch
+ * Initialise la fonctionnalité de recherche
  */
 const initSearch = () => {
     state.searchBox = new MapboxSearchBox();
@@ -116,7 +145,7 @@ const initSearch = () => {
         scale: 1,
         draggable: false
     };
-    
+
     state.searchBox.mapboxgl = mapboxgl;
     map.addControl(state.searchBox);
     state.searchBox.bindMap(map);
@@ -127,26 +156,19 @@ const initSearch = () => {
 
 /**
  * Gère le résultat d'une recherche
- * @function handleSearchResult
- * @param {CustomEvent} event - Événement contenant les résultats de recherche
  */
 const handleSearchResult = (event) => {
     const coordinates = event.detail.features[0].geometry.coordinates;
     state.lastSearchCoordinates = coordinates;
-    
     updateSearchRadiusLayers(coordinates);
 };
 
 /**
- * Met à jour les cercles de rayon de recherche sur la carte
- * @function updateSearchRadiusLayers
- * @param {[number, number]} coordinates - Coordonnées [longitude, latitude]
+ * Met à jour les cercles de rayon de recherche
  */
 const updateSearchRadiusLayers = (coordinates) => {
-    // Supprimer les anciens cercles en une seule fois
     removeSearchRadiusLayers();
-    
-    // Créer les nouveaux cercles
+
     const radiusConfigs = [
         { id: 'search-radius-50', radius: 25, color: '#ff0000' },
         { id: 'search-radius-100', radius: 50, color: '#00ff00' }
@@ -158,36 +180,29 @@ const updateSearchRadiusLayers = (coordinates) => {
 };
 
 /**
- * Ajoute une couche de rayon de recherche à la carte
- * @function addSearchRadiusLayer
- * @param {[number, number]} coordinates - Coordonnées [longitude, latitude]
- * @param {Object} config - Configuration du cercle
- * @param {string} config.id - Identifiant unique de la couche
- * @param {number} config.radius - Rayon du cercle en mètres
- * @param {string} config.color - Couleur du cercle en format hexadécimal
+ * Ajoute une couche de rayon de recherche
  */
 const addSearchRadiusLayer = (coordinates, config) => {
-    const source = {
-        'type': 'geojson',
-        'data': {
-            'type': 'Feature',
-            'geometry': {
-                'type': 'Point',
-                'coordinates': coordinates
+    map.addSource(config.id, {
+        type: 'geojson',
+        data: {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: coordinates
             }
         }
-    };
+    });
 
-    map.addSource(config.id, source);
     state.currentLayers.add(config.id);
 
     map.addLayer({
-        'id': config.id,
-        'type': 'circle',
-        'source': config.id,
-        'paint': {
+        id: config.id,
+        type: 'circle',
+        source: config.id,
+        paint: {
             'circle-radius': {
-                'stops': [
+                stops: [
                     [14, config.radius / 4],
                     [15, config.radius / 2],
                     [16, config.radius],
@@ -195,7 +210,7 @@ const addSearchRadiusLayer = (coordinates, config) => {
                     [18, config.radius * 4],
                     [19, config.radius * 8]
                 ],
-                'base': 2
+                base: 2
             },
             'circle-color': config.color,
             'circle-opacity': 0.3,
@@ -206,8 +221,7 @@ const addSearchRadiusLayer = (coordinates, config) => {
 };
 
 /**
- * Supprime toutes les couches de rayon de recherche de la carte
- * @function removeSearchRadiusLayers
+ * Supprime toutes les couches de rayon de recherche
  */
 const removeSearchRadiusLayers = () => {
     state.currentLayers.forEach(id => {
@@ -220,22 +234,18 @@ const removeSearchRadiusLayers = () => {
 };
 
 /**
- * Gère le clic sur le bouton Fire
- * @function handleFireClick
- * Ouvre une nouvelle fenêtre avec l'interface Fire
+ * Ouvre l'interface F.I.R.E
  */
 const handleFireClick = () => {
     window.open('fire.html', '_blank', "height=600,width=500");
 };
 
 /**
- * Gère le clic sur le bouton de mesure
- * @function handleMesureClick
- * Active/désactive le mode mesure et configure les événements associés
+ * Active/désactive le mode mesure
  */
 const handleMesureClick = () => {
     state.isMeasuring = !state.isMeasuring;
-    
+
     if (state.isMeasuring) {
         elements.mapCanvas.style.cursor = 'crosshair';
         map.on('click', addMeasurePoint);
@@ -245,13 +255,11 @@ const handleMesureClick = () => {
 };
 
 /**
- * Ajoute un point de mesure sur la carte
- * @function addMeasurePoint
- * @param {MapMouseEvent} e - Événement de clic sur la carte
+ * Ajoute un point de mesure
  */
 const addMeasurePoint = (e) => {
     state.measurePoints.push(e.lngLat);
-    
+
     if (state.measurePoints.length === 2) {
         const distance = calculateDistance();
         drawMeasureLine();
@@ -262,20 +270,17 @@ const addMeasurePoint = (e) => {
 
 /**
  * Calcule la distance entre deux points de mesure
- * @function calculateDistance
- * @returns {number} Distance en mètres
  */
 const calculateDistance = () => {
     return turf.distance(
         turf.point([state.measurePoints[0].lng, state.measurePoints[0].lat]),
         turf.point([state.measurePoints[1].lng, state.measurePoints[1].lat]),
-        {units: 'meters'}
+        { units: 'meters' }
     );
 };
 
 /**
  * Dessine une ligne entre les points de mesure
- * @function drawMeasureLine
  */
 const drawMeasureLine = () => {
     const lineId = 'measure-line';
@@ -283,23 +288,23 @@ const drawMeasureLine = () => {
         map.removeLayer(lineId);
         map.removeSource(lineId);
     }
-    
+
     map.addSource(lineId, {
-        'type': 'geojson',
-        'data': {
-            'type': 'Feature',
-            'geometry': {
-                'type': 'LineString',
-                'coordinates': state.measurePoints.map(point => [point.lng, point.lat])
+        type: 'geojson',
+        data: {
+            type: 'Feature',
+            geometry: {
+                type: 'LineString',
+                coordinates: state.measurePoints.map(point => [point.lng, point.lat])
             }
         }
     });
 
     map.addLayer({
-        'id': lineId,
-        'type': 'line',
-        'source': lineId,
-        'paint': {
+        id: lineId,
+        type: 'line',
+        source: lineId,
+        paint: {
             'line-color': '#ff0000',
             'line-width': 2
         }
@@ -308,9 +313,6 @@ const drawMeasureLine = () => {
 
 /**
  * Affiche une popup avec la distance mesurée
- * @function showDistancePopup
- * @param {LngLat} lngLat - Coordonnées où afficher la popup
- * @param {number} distance - Distance à afficher en mètres
  */
 const showDistancePopup = (lngLat, distance) => {
     new mapboxgl.Popup()
@@ -320,8 +322,7 @@ const showDistancePopup = (lngLat, distance) => {
 };
 
 /**
- * Nettoie les éléments de mesure (points, ligne, popup)
- * @function cleanupMeasure
+ * Nettoie les éléments de mesure
  */
 const cleanupMeasure = () => {
     elements.mapCanvas.style.cursor = '';
@@ -331,8 +332,7 @@ const cleanupMeasure = () => {
 };
 
 /**
- * Centre la carte sur les coordonnées par défaut
- * @function handleCentrerClick
+ * Centre la carte sur la dernière recherche
  */
 const handleCentrerClick = () => {
     if (state.lastSearchCoordinates) {
@@ -346,5 +346,5 @@ const handleCentrerClick = () => {
     }
 };
 
-// Initialisation
+// Initialisation de la recherche
 document.getElementById('search-js').addEventListener('load', initSearch);

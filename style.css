@@ -102,14 +102,6 @@ body {
   margin-right: 10px;
 }
 
-.marker-caserne {
-  background-image: url('images/casque.png');
-  background-size: cover;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-}
 
 .marker-bi {
   background-image: url('images/bi.png');
@@ -142,71 +134,4 @@ body {
   font-size: 16px;
   font-family: Helvetica, sans-serif;
   font-weight: 700;
-}
-
-.contact-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: #0f172a;
-}
-
-.contact h1 {
-  color: #ededed;
-  font-size: 40px;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.contact form {
-  width: 600px;
-  text-align: center;
-}
-
-form .input-box {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.input-box .item-field {
-  width: 100%;
-}
-
-.field .item {
-  width: 100%;
-  padding: 18px;
-  background: transparent;
-  border: 2px solid #3B82F6;
-  outline: none;
-  border-radius: 6px;
-  font-size: 16px;
-  color: #ededed;
-  margin: 12px 0;
-}
-
-.field .item::placeholder {
-  font-size: 16px;
-  color: rgba(255, 255, 255, .3);
-}
-
-form .textarea-field .item {
-  height: 150px;
-  resize: none;
-}
-
-form button {
-  padding: 10px 20px;
-  background: #3B82F6;
-  outline: none;
-  border: none;
-  border-radius: 4px;
-  box-shadow: 0 0 10px #3B82F6;
-  cursor: pointer;
-  font-size: 16px;
-  letter-spacing: 1px;
-  font-weight: 600;
-  color: #ededed;
-  margin-top: 20px;
 }
