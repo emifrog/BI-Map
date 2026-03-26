@@ -94,34 +94,39 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 /**
- * Charge les hydrants depuis Supabase avec pagination
+ * Charge les hydrants depuis Supabase en parallele
  */
 const loadHydrants = async () => {
     try {
         const pageSize = 1000;
-        let allData = [];
-        let offset = 0;
-        let hasMore = true;
+        const headers = {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY
+        };
 
-        while (hasMore) {
-            const response = await fetch(
-                SUPABASE_URL + '/rest/v1/BI?select=title,num,lng,lat&limit=' + pageSize + '&offset=' + offset, {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': 'Bearer ' + SUPABASE_KEY
-                }
-            });
+        // Premiere requete pour connaitre le total
+        const firstResponse = await fetch(
+            SUPABASE_URL + '/rest/v1/BI?select=title,num,lng,lat&limit=' + pageSize + '&offset=0', {
+            headers: { ...headers, 'Prefer': 'count=exact' }
+        });
 
-            if (!response.ok) throw new Error('Erreur Supabase: ' + response.status);
+        if (!firstResponse.ok) throw new Error('Erreur Supabase: ' + firstResponse.status);
 
-            const data = await response.json();
-            allData = allData.concat(data);
-            hasMore = data.length === pageSize;
-            offset += pageSize;
+        const firstData = await firstResponse.json();
+        const total = parseInt(firstResponse.headers.get('content-range').split('/')[1]);
+
+        // Lancer les requetes restantes en parallele
+        const remainingPages = [];
+        for (let offset = pageSize; offset < total; offset += pageSize) {
+            remainingPages.push(
+                fetch(SUPABASE_URL + '/rest/v1/BI?select=title,num,lng,lat&limit=' + pageSize + '&offset=' + offset, { headers })
+                    .then(r => r.json())
+            );
         }
 
-        console.log('Hydrants charges depuis Supabase:', allData.length);
-        const data = allData;
+        const results = await Promise.all(remainingPages);
+        const data = firstData.concat(...results);
+        console.log('Hydrants charges depuis Supabase:', data.length);
 
         const geojson = {
             type: 'FeatureCollection',
@@ -433,4 +438,38 @@ const showToast = (message) => {
 };
 
 // Initialisation de la recherche
-document.getElementById('search-js').addEventListener('load', initSearch);
+// Si search-js est deja charge (defer), initialiser directement
+if (typeof MapboxSearchBox !== 'undefined') {
+    initSearch();
+} else {
+    document.getElementById('search-js').addEventListener('load', initSearch);
+}
+
+// FAB toggle pour mobile (pas de hover sur tactile)
+const fab = document.querySelector('.fab');
+const fabOptions = document.querySelector('.fab-options');
+
+fab.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fabOptions.classList.toggle('open');
+});
+
+document.addEventListener('click', () => {
+    fabOptions.classList.remove('open');
+});
+
+fabOptions.addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+
+// Actions des boutons FAB
+document.querySelector('.fab-button-fire').addEventListener('click', handleFireClick);
+document.querySelector('.fab-button-mesure').addEventListener('click', handleMesureClick);
+document.querySelector('.fab-button-centrer').addEventListener('click', handleCentrerClick);
+document.querySelector('.fab-button-contact').addEventListener('click', () => {
+    window.location.href = 'contact.html';
+});
+document.querySelector('.fab-button-logout').addEventListener('click', () => {
+    localStorage.removeItem('supabase_session');
+    window.location.href = 'login.html';
+});

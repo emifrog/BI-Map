@@ -52,3 +52,28 @@
 - [ ] **Compteur de BI dans le rayon** - Nombre de BI dans les cercles 50m/100m apres recherche
 - [ ] **Casernes sur la carte** - Afficher les casernes avec `casque.png` depuis Supabase
 - [ ] **Mode PWA** - `manifest.json` pour installation sur telephone + cache offline des donnees
+
+# Bilan performance
+
+## Ce qui est bien fait
+- Symbol layer GPU pour les 2 657 BI (au lieu de div DOM)
+- Preload des ressources critiques (mapbox CSS/JS)
+- defer sur les scripts non-critiques
+- Service Worker avec strategies de cache differenciees
+- Google Fonts reduit a 3 poids
+- Pas de framework lourd - vanilla JS
+
+## Ce qui penalise la performance
+Probleme	Impact	Detail
+1. mapbox-gl.js bloquant	Fort	Ligne 46 : charge en synchrone (~800 KB), bloque tout le rendu
+2. 3 requetes Supabase sequentielles	Moyen	Pagination 1000+1000+657 = 3 allers-retours reseau
+3. Font Awesome Kit complet	Moyen	Charge ~300 KB pour 6 icones utilisees
+4. Google Fonts via @import CSS	Faible	@import dans le CSS bloque le rendu, un <link> serait mieux
+5. Pas de meta theme-color	Faible	Impact percu sur mobile
+
+## Score estime
+
+Performance : ~60-70 (penalise par mapbox-gl.js synchrone)
+Accessibility : ~85-90
+Best Practices : ~80-85
+SEO : ~85-90

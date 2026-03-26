@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Cartographie des bouches d'incendie du 06" />
+    <meta name="theme-color" content="#d23f31" />
     <title>BI Map</title>
 
     <!-- Preload des ressources critiques -->
@@ -17,6 +18,7 @@
 
     <!-- Styles critiques -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 
     <!-- TODO: activer quand l'authentification sera prete
@@ -42,12 +44,10 @@
         }
     </script>
 
-    <!-- Scripts critiques -->
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
-
-    <!-- Scripts non-critiques avec defer -->
+    <!-- Scripts avec defer pour ne pas bloquer le rendu -->
+    <script id="mapbox-gl" defer src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
     <script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.22/web.js"></script>
-    <script defer src="https://kit.fontawesome.com/8d747dca8a.js" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
@@ -58,14 +58,14 @@
     </div>
     <div class="fab-container">
         <div class="fab fab-icon-holder">
-            <i class="fas fa-plus"></i>
+            <svg viewBox="0 0 448 512" fill="#fff" width="20" height="20"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32v144H48c-17.7 0-32 14.3-32 32s14.3 32 32 32h144v144c0 17.7 14.3 32 32 32s32-14.3 32-32V288h144c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
         </div>
         <ul class="fab-options">
             <li>
                 <span class="fab-label">F.I.R.E</span>
                 <button class="fab-button-fire" aria-label="Ouvrir les fiches F.I.R.E">
                     <div class="fab-icon-holder">
-                        <i class="fas fa-fire"></i>
+                        <svg viewBox="0 0 384 512" fill="#fff" width="18" height="18"><path d="M216 23.86c0-23.8-30.65-32.77-44.15-13.04C48 191.85 224 200 224 288c0 35.63-29.11 64.46-64.85 63.99-35.17-.45-63.15-29.77-63.15-64.94v-85.51c0-21.7-26.47-32.23-41.43-16.5C27.8 213.16 0 261.33 0 320c0 105.87 86.13 192 192 192s192-86.13 192-192c0-170.29-168-193-168-296.14z"/></svg>
                     </div>
                 </button>
             </li>
@@ -73,7 +73,7 @@
                 <span class="fab-label">Mesure</span>
                 <button class="fab-button-mesure" aria-label="Activer l'outil de mesure de distance">
                     <div class="fab-icon-holder">
-                        <i class="fas fa-ruler"></i>
+                        <svg viewBox="0 0 640 512" fill="#fff" width="20" height="20"><path d="M635.7 179.2L543.2 16.3c-7.6-13.5-26.5-22-43.7-11.9L16 288.3c-15.3 9-20.6 28.9-11.7 44.5l92.5 162.9c7.6 13.4 26.5 22 43.7 11.9L624 223.7c15.3-9 20.5-28.9 11.7-44.5zm-505.4 278L53.9 322.5l46-27 34.2 60.3c2.2 3.9 7.1 5.2 10.9 3l26.6-15.6c3.8-2.2 5.1-7.2 2.9-11.1l-34.2-60.3 40.4-23.7 18.7 32.9c2.2 3.9 7.1 5.2 10.9 3l26.6-15.6c3.8-2.2 5.1-7.2 2.9-11.1l-18.7-32.9 40.4-23.7 34.2 60.3c2.2 3.9 7.1 5.2 10.9 3l26.6-15.6c3.8-2.2 5.1-7.2 2.9-11.1L302 176.8l40.4-23.7 18.7 32.9c2.2 3.9 7.1 5.2 10.9 3l26.6-15.6c3.8-2.2 5.1-7.2 2.9-11.1l-18.7-32.9 40.4-23.7 34.2 60.3c2.2 3.9 7.1 5.2 10.9 3l26.6-15.6c3.8-2.2 5.1-7.2 2.9-11.1L463.6 82l46-27 76.5 134.7-455.8 267.5z"/></svg>
                     </div>
                 </button>
             </li>
@@ -81,7 +81,7 @@
                 <span class="fab-label">Centrer</span>
                 <button class="fab-button-centrer" aria-label="Centrer sur la derniere recherche">
                     <div class="fab-icon-holder">
-                        <i class="fas fa-crosshairs"></i>
+                        <svg viewBox="0 0 512 512" fill="#fff" width="18" height="18"><path d="M256 0c17.7 0 32 14.3 32 32v34.7C368.4 80.1 431.9 143.6 445.3 224H480c17.7 0 32 14.3 32 32s-14.3 32-32 32h-34.7C431.9 368.4 368.4 431.9 288 445.3V480c0 17.7-14.3 32-32 32s-32-14.3-32-32v-34.7C143.6 431.9 80.1 368.4 66.7 288H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h34.7C80.1 143.6 143.6 80.1 224 66.7V32c0-17.7 14.3-32 32-32zm0 128a128 128 0 1 0 0 256 128 128 0 1 0 0-256zm0 80a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/></svg>
                     </div>
                 </button>
             </li>
@@ -89,7 +89,7 @@
                 <span class="fab-label">Contact</span>
                 <button class="fab-button-contact" aria-label="Ouvrir le formulaire de contact">
                     <div class="fab-icon-holder">
-                        <i class="fas fa-envelope"></i>
+                        <svg viewBox="0 0 512 512" fill="#fff" width="18" height="18"><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg>
                     </div>
                 </button>
             </li>
@@ -97,45 +97,14 @@
                 <span class="fab-label">Deconnexion</span>
                 <button class="fab-button-logout" aria-label="Se deconnecter">
                     <div class="fab-icon-holder fab-icon-logout">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <svg viewBox="0 0 512 512" fill="#fff" width="18" height="18"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9V320H192c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32h128V129.9c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96C160 60.7 131.3 32 96 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h32c35.3 0 64-28.7 64-64V96z"/></svg>
                     </div>
                 </button>
             </li>
         </ul>
     </div>
 
-    <script src="js/main.js"></script>
-    <script>
-        // FAB toggle pour mobile (pas de hover sur tactile)
-        const fab = document.querySelector('.fab');
-        const fabOptions = document.querySelector('.fab-options');
-
-        fab.addEventListener('click', (e) => {
-            e.stopPropagation();
-            fabOptions.classList.toggle('open');
-        });
-
-        // Fermer le menu FAB au clic ailleurs
-        document.addEventListener('click', () => {
-            fabOptions.classList.remove('open');
-        });
-
-        fabOptions.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-
-        // Actions des boutons FAB
-        document.querySelector('.fab-button-fire').addEventListener('click', handleFireClick);
-        document.querySelector('.fab-button-mesure').addEventListener('click', handleMesureClick);
-        document.querySelector('.fab-button-centrer').addEventListener('click', handleCentrerClick);
-        document.querySelector('.fab-button-contact').addEventListener('click', () => {
-            window.location.href = 'contact.html';
-        });
-        document.querySelector('.fab-button-logout').addEventListener('click', () => {
-            localStorage.removeItem('supabase_session');
-            window.location.href = 'login.html';
-        });
-    </script>
+    <script defer src="js/main.js"></script>
 
 </body>
 
