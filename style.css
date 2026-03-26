@@ -23,6 +23,7 @@ body {
 
 #search-box-container {
   width: 300px;
+  max-width: calc(100% - 20px);
   float: right;
   margin: 10px 10px 0 0;
 }
@@ -75,12 +76,23 @@ body {
   opacity: 0;
   transition: all 0.3s ease;
   transform: scale(0);
-  transform-origin: 85%  bottom;
+  transform-origin: 85% bottom;
+  pointer-events: none;
 }
 
-.fab:hover + .fab-options, .fab-options:hover {
+/* Ouverture au hover (desktop) */
+.fab:hover + .fab-options,
+.fab-options:hover {
   opacity: 1;
   transform: scale(1);
+  pointer-events: auto;
+}
+
+/* Ouverture au tap (mobile) via classe JS */
+.fab-options.open {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
 }
 
 .fab-options li {
@@ -143,4 +155,41 @@ body {
   font-size: 16px;
   font-family: Helvetica, sans-serif;
   font-weight: 700;
+}
+
+/* Responsive mobile / tablette */
+@media screen and (max-width: 768px) {
+  .fab-container {
+    bottom: 30px;
+    right: 20px;
+  }
+
+  .fab-icon-holder {
+    width: 45px;
+    height: 45px;
+  }
+
+  .fab {
+    width: 55px;
+    height: 55px;
+  }
+
+  .fab-icon-holder i {
+    font-size: 20px;
+  }
+
+  .fab-label {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .fab-container {
+    bottom: 20px;
+    right: 15px;
+  }
+
+  #search-box-container {
+    width: calc(100% - 70px);
+  }
 }

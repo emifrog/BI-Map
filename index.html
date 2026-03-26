@@ -90,6 +90,25 @@
 
     <script src="js/main.js"></script>
     <script>
+        // FAB toggle pour mobile (pas de hover sur tactile)
+        const fab = document.querySelector('.fab');
+        const fabOptions = document.querySelector('.fab-options');
+
+        fab.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fabOptions.classList.toggle('open');
+        });
+
+        // Fermer le menu FAB au clic ailleurs
+        document.addEventListener('click', () => {
+            fabOptions.classList.remove('open');
+        });
+
+        fabOptions.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Actions des boutons FAB
         document.querySelector('.fab-button-fire').addEventListener('click', handleFireClick);
         document.querySelector('.fab-button-mesure').addEventListener('click', handleMesureClick);
         document.querySelector('.fab-button-centrer').addEventListener('click', handleCentrerClick);
