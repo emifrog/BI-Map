@@ -1,5 +1,5 @@
-const CACHE_NAME = 'bi-map-cache-v3';
-const DATA_CACHE_NAME = 'bi-map-data-v2';
+const CACHE_NAME = 'bi-map-cache-v4';
+const DATA_CACHE_NAME = 'bi-map-data-v3';
 const TILES_CACHE_NAME = 'bi-map-tiles-v1';
 
 // Ressources locales a pre-cacher
@@ -20,8 +20,6 @@ const ASSETS_TO_CACHE = [
 
 // Donnees JSON (cache separe)
 const DATA_TO_CACHE = [
-    './data/nice.json',
-    './data/bv.json',
     './data/fires.json'
 ];
 

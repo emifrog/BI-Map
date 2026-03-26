@@ -22,9 +22,10 @@ const SEARCH_CONFIG = {
 };
 
 /**
- * Fichiers de donnees hydrants a charger
+ * Configuration Supabase
  */
-const HYDRANT_FILES = ['data/nice.json', 'data/bv.json'];
+const SUPABASE_URL = 'https://ugkgingplyskgjgpqpue.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVna2dpbmdwbHlza2dqZ3BxcHVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1Mjk5MzcsImV4cCI6MjA5MDEwNTkzN30.chrGTi9wT4rAABqeM2UtHrq7Td2T8_zLQAnoTHbVeus';
 
 /**
  * Cache des elements DOM frequemment utilises
@@ -93,23 +94,38 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 /**
- * Charge et fusionne les donnees GeoJSON des hydrants
+ * Charge les hydrants depuis Supabase et les convertit en GeoJSON
  */
 const loadHydrants = async () => {
     try {
-        const responses = await Promise.all(
-            HYDRANT_FILES.map(file => fetch(file).then(r => {
-                if (!r.ok) throw new Error(`Erreur chargement ${file}: ${r.status}`);
-                return r.json();
-            }))
-        );
+        const response = await fetch(SUPABASE_URL + '/rest/v1/BI?select=title,num,lng,lat', {
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_KEY
+            }
+        });
 
-        const merged = {
+        if (!response.ok) throw new Error('Erreur Supabase: ' + response.status);
+
+        const data = await response.json();
+        console.log('Hydrants charges depuis Supabase:', data.length);
+
+        const geojson = {
             type: 'FeatureCollection',
-            features: responses.flatMap(data => data.features)
+            features: data.map(row => ({
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [row.lng, row.lat]
+                },
+                properties: {
+                    title: row.title,
+                    num: row.num
+                }
+            }))
         };
 
-        addHydrantLayer(merged);
+        addHydrantLayer(geojson);
     } catch (error) {
         console.error('Erreur lors du chargement des hydrants:', error);
     }
