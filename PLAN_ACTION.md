@@ -3,7 +3,7 @@
 ## P0 - Bugs critiques
 
 - [x] **Corriger `font-style: 25px` -> `font-size: 25px`** dans `style.css:59` - Les icones du FAB n'ont aucun dimensionnement
-- [ ] **Remplir les URLs manquantes dans `fires.json`** - 434 fiches sur 435 ont une URL vide, la feature F.I.R.E est quasi inutile
+- [x] **Remplir les URLs manquantes dans `fires.json`** - 435 URLs generees automatiquement vers le bucket Supabase (167 PDF uploades, 268 restants a uploader)
 
 ## P1 - Performance et securite
 
@@ -28,3 +28,12 @@
 - [x] **Remplacer `alert()`** par une notification toast non-bloquante dans `js/main.js`
 - [x] **Corriger l'icone du bouton Centrer** - `fa-plus` -> `fa-crosshairs` dans `index.html`
 - [x] **Supprimer `preserveDrawingBuffer: true`** dans `js/main.js`
+
+## P4 - Evolution : Migration des hydrants vers Supabase
+
+- [ ] **Creer la table `hydrants`** dans Supabase avec colonnes : `id` (int8 auto), `title` (text), `num` (text), `lng` (float8), `lat` (float8)
+- [ ] **Generer un CSV** a partir des JSON existants (`nice.json` + `bv.json` = 2 657 hydrants) pour import dans Supabase
+- [ ] **Importer le CSV** dans Supabase via Table Editor > Import
+- [ ] **Modifier `loadHydrants()` dans `js/main.js`** - Remplacer `fetch('data/nice.json')` par un appel API REST Supabase
+- [ ] **Supprimer les fichiers statiques** `data/nice.json` et `data/bv.json` une fois la migration validee
+- [ ] **Mettre a jour le Service Worker** `sw.js` pour retirer le pre-cache des JSON supprimes

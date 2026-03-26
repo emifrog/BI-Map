@@ -51,11 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     autocomBox.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A') {
+        const link = e.target.closest('a');
+        if (link) {
             e.preventDefault();
-            searchInput.value = e.target.textContent;
-            window.location.href = e.target.href;
+            searchInput.value = link.textContent;
             autocomBox.style.display = 'none';
+            window.open(link.href, '_blank');
         }
     });
 });
