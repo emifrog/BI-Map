@@ -101,11 +101,12 @@ const loadHydrants = async () => {
         const response = await fetch(SUPABASE_URL + '/rest/v1/BI?select=title,num,lng,lat', {
             headers: {
                 'apikey': SUPABASE_KEY,
-                'Authorization': 'Bearer ' + SUPABASE_KEY
+                'Authorization': 'Bearer ' + SUPABASE_KEY,
+                'Range': '0-9999'
             }
         });
 
-        if (!response.ok) throw new Error('Erreur Supabase: ' + response.status);
+        if (!response.ok && response.status !== 206) throw new Error('Erreur Supabase: ' + response.status);
 
         const data = await response.json();
         console.log('Hydrants charges depuis Supabase:', data.length);
