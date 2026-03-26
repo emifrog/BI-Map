@@ -19,6 +19,14 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 
+    <!-- TODO: activer quand l'authentification sera prete
+    <script>
+        if (!localStorage.getItem('supabase_session')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    -->
+
     <script>
         // Enregistrement du Service Worker
         if ('serviceWorker' in navigator) {
@@ -85,6 +93,14 @@
                     </div>
                 </button>
             </li>
+            <li>
+                <span class="fab-label">Deconnexion</span>
+                <button class="fab-button-logout" aria-label="Se deconnecter">
+                    <div class="fab-icon-holder fab-icon-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                </button>
+            </li>
         </ul>
     </div>
 
@@ -114,6 +130,10 @@
         document.querySelector('.fab-button-centrer').addEventListener('click', handleCentrerClick);
         document.querySelector('.fab-button-contact').addEventListener('click', () => {
             window.location.href = 'contact.html';
+        });
+        document.querySelector('.fab-button-logout').addEventListener('click', () => {
+            localStorage.removeItem('supabase_session');
+            window.location.href = 'login.html';
         });
     </script>
 

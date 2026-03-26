@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Connexion BI Map - Sapeurs Pompiers 06" />
+    <title>Connexion - BI Map</title>
+
+    <script defer src="https://kit.fontawesome.com/8d747dca8a.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body class="login-body">
+
+    <section class="login">
+        <div class="login-logo">
+            <img src="images/logo.png" alt="logo BI Map">
+        </div>
+        <h1>BI Map</h1>
+        <p>Connectez-vous pour acceder a la carte</p>
+
+        <div id="error-message" class="error-message" style="display: none;"></div>
+
+        <form id="login-form">
+            <div class="input-field field">
+                <i class="fas fa-envelope field-icon"></i>
+                <input type="email" placeholder="Email" id="email" name="email" class="item" autocomplete="email" required>
+            </div>
+            <div class="input-field field">
+                <i class="fas fa-lock field-icon"></i>
+                <input type="password" placeholder="Mot de passe" id="password" name="password" class="item" autocomplete="current-password" required>
+            </div>
+            <button type="submit" id="login-btn">
+                <span id="btn-text">Se connecter</span>
+                <i id="btn-spinner" class="fas fa-spinner fa-spin" style="display: none;"></i>
+            </button>
+        </form>
+    </section>
+
+    <script>
+        const SUPABASE_URL = 'https://ugkgingplyskgjgpqpue.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVna2dpbmdwbHlza2dqZ3BxcHVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1Mjk5MzcsImV4cCI6MjA5MDEwNTkzN30.chrGTi9wT4rAABqeM2UtHrq7Td2T8_zLQAnoTHbVeus';
+
+        // Si deja connecte, rediriger vers la carte
+        const session = localStorage.getItem('supabase_session');
+        if (session) {
+            window.location.href = 'index.html';
+        }
+
+        const form = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
+        const loginBtn = document.getElementById('login-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.style.display = 'none';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Afficher le spinner
+            btnText.style.display = 'none';
+            btnSpinner.style.display = 'inline-block';
+            loginBtn.disabled = true;
+
+            try {
+                const response = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error_description || data.msg || 'Identifiants incorrects');
+                }
+
+                // Stocker la session
+                localStorage.setItem('supabase_session', JSON.stringify({
+                    access_token: data.access_token,
+                    refresh_token: data.refresh_token,
+                    user: data.user
+                }));
+
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                btnText.style.display = 'inline';
+                btnSpinner.style.display = 'none';
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+
+</html>

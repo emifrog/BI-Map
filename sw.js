@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bi-map-cache-v4';
+const CACHE_NAME = 'bi-map-cache-v5';
 const DATA_CACHE_NAME = 'bi-map-data-v3';
 const TILES_CACHE_NAME = 'bi-map-tiles-v1';
 
@@ -15,7 +15,9 @@ const ASSETS_TO_CACHE = [
     './css/fire.css',
     './js/fire.js',
     './contact.html',
-    './css/contact.css'
+    './css/contact.css',
+    './login.html',
+    './css/login.css'
 ];
 
 // Donnees JSON (cache separe)
