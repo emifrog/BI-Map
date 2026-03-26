@@ -94,22 +94,34 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 /**
- * Charge les hydrants depuis Supabase et les convertit en GeoJSON
+ * Charge les hydrants depuis Supabase avec pagination
  */
 const loadHydrants = async () => {
     try {
-        const response = await fetch(SUPABASE_URL + '/rest/v1/BI?select=title,num,lng,lat', {
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': 'Bearer ' + SUPABASE_KEY,
-                'Range': '0-9999'
-            }
-        });
+        const pageSize = 1000;
+        let allData = [];
+        let offset = 0;
+        let hasMore = true;
 
-        if (!response.ok && response.status !== 206) throw new Error('Erreur Supabase: ' + response.status);
+        while (hasMore) {
+            const response = await fetch(
+                SUPABASE_URL + '/rest/v1/BI?select=title,num,lng,lat&limit=' + pageSize + '&offset=' + offset, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_KEY
+                }
+            });
 
-        const data = await response.json();
-        console.log('Hydrants charges depuis Supabase:', data.length);
+            if (!response.ok) throw new Error('Erreur Supabase: ' + response.status);
+
+            const data = await response.json();
+            allData = allData.concat(data);
+            hasMore = data.length === pageSize;
+            offset += pageSize;
+        }
+
+        console.log('Hydrants charges depuis Supabase:', allData.length);
+        const data = allData;
 
         const geojson = {
             type: 'FeatureCollection',
