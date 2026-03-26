@@ -12,13 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let allSuggestions = [];
 
     async function loadSuggestions() {
+        // Construire l'URL absolue a partir de l'emplacement de la page
+        const base = new URL('.', window.location.href).href;
+        const url = base + 'data/fires.json';
+        console.log('FIRE: chargement depuis', url);
         try {
-            const response = await fetch('data/fires.json');
+            const response = await fetch(url);
             if (!response.ok) throw new Error('HTTP ' + response.status);
             allSuggestions = await response.json();
             console.log('FIRE: ' + allSuggestions.length + ' fiches chargees');
         } catch (error) {
-            console.error('Erreur lors du chargement des suggestions:', error);
+            console.error('FIRE: erreur chargement:', error);
         }
     }
 
