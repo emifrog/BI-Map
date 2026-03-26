@@ -116,10 +116,9 @@ const loadHydrants = async () => {
 };
 
 /**
- * Ajoute les hydrants via un symbol layer Mapbox avec clustering
+ * Ajoute les hydrants via un symbol layer Mapbox
  */
 const addHydrantLayer = (geojson) => {
-    // Charger l'icone BI
     map.loadImage('images/bi.png', (error, image) => {
         if (error) {
             console.error('Erreur chargement icone BI:', error);
@@ -128,61 +127,15 @@ const addHydrantLayer = (geojson) => {
 
         map.addImage('bi-icon', image);
 
-        // Source avec clustering
         map.addSource('hydrants', {
             type: 'geojson',
-            data: geojson,
-            cluster: true,
-            clusterMaxZoom: 16,
-            clusterRadius: 50
+            data: geojson
         });
 
-        // Layer clusters (cercles regroupes)
         map.addLayer({
-            id: 'clusters',
-            type: 'circle',
-            source: 'hydrants',
-            filter: ['has', 'point_count'],
-            paint: {
-                'circle-color': [
-                    'step', ['get', 'point_count'],
-                    '#2196F3', 10,
-                    '#1976D2', 30,
-                    '#0D47A1'
-                ],
-                'circle-radius': [
-                    'step', ['get', 'point_count'],
-                    15, 10,
-                    20, 30,
-                    25
-                ],
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#ffffff'
-            }
-        });
-
-        // Layer nombre dans les clusters
-        map.addLayer({
-            id: 'cluster-count',
+            id: 'hydrants-layer',
             type: 'symbol',
             source: 'hydrants',
-            filter: ['has', 'point_count'],
-            layout: {
-                'text-field': '{point_count_abbreviated}',
-                'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
-                'text-size': 12
-            },
-            paint: {
-                'text-color': '#ffffff'
-            }
-        });
-
-        // Layer points individuels (icone BI)
-        map.addLayer({
-            id: 'unclustered-point',
-            type: 'symbol',
-            source: 'hydrants',
-            filter: ['!', ['has', 'point_count']],
             layout: {
                 'icon-image': 'bi-icon',
                 'icon-size': 0.1,
@@ -190,21 +143,8 @@ const addHydrantLayer = (geojson) => {
             }
         });
 
-        // Clic sur un cluster -> zoom
-        map.on('click', 'clusters', (e) => {
-            const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-            const clusterId = features[0].properties.cluster_id;
-            map.getSource('hydrants').getClusterExpansionZoom(clusterId, (err, zoom) => {
-                if (err) return;
-                map.easeTo({
-                    center: features[0].geometry.coordinates,
-                    zoom: zoom
-                });
-            });
-        });
-
-        // Clic sur un point individuel -> popup
-        map.on('click', 'unclustered-point', (e) => {
+        // Clic sur un point -> popup
+        map.on('click', 'hydrants-layer', (e) => {
             const feature = e.features[0];
             const coordinates = feature.geometry.coordinates.slice();
             const title = feature.properties.title || '';
@@ -216,17 +156,10 @@ const addHydrantLayer = (geojson) => {
                 .addTo(map);
         });
 
-        // Curseur pointer sur les clusters et points
-        map.on('mouseenter', 'clusters', () => {
+        map.on('mouseenter', 'hydrants-layer', () => {
             elements.mapCanvas.style.cursor = 'pointer';
         });
-        map.on('mouseleave', 'clusters', () => {
-            elements.mapCanvas.style.cursor = '';
-        });
-        map.on('mouseenter', 'unclustered-point', () => {
-            elements.mapCanvas.style.cursor = 'pointer';
-        });
-        map.on('mouseleave', 'unclustered-point', () => {
+        map.on('mouseleave', 'hydrants-layer', () => {
             elements.mapCanvas.style.cursor = '';
         });
     });
