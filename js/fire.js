@@ -2,13 +2,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchText');
     const autocomBox = document.querySelector('.autocom-box');
+    const form = document.querySelector('form[role="search"]');
+
+    // Empecher le submit du formulaire (recharge la page)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+    });
 
     let allSuggestions = [];
 
     async function loadSuggestions() {
         try {
             const response = await fetch('data/fires.json');
+            if (!response.ok) throw new Error('HTTP ' + response.status);
             allSuggestions = await response.json();
+            console.log('FIRE: ' + allSuggestions.length + ' fiches chargees');
         } catch (error) {
             console.error('Erreur lors du chargement des suggestions:', error);
         }
