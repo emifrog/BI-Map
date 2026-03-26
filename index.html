@@ -8,6 +8,10 @@
     <meta name="theme-color" content="#d23f31" />
     <title>BI Map</title>
 
+    <!-- Preconnect pour accelerer les fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Preload des ressources critiques -->
     <link rel="preload" href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" as="style">
     <link rel="preload" href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js" as="script">
@@ -18,8 +22,10 @@
 
     <!-- Styles critiques -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
+
+    <!-- Google Fonts non-bloquant -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
     <!-- TODO: activer quand l'authentification sera prete
     <script>
