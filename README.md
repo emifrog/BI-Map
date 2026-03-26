@@ -1,4 +1,4 @@
-# BI Map 🗺️
+# BI-Map 🗺️
 
 > Cartographie interactive des bouches d'incendie des Alpes-Maritimes (06)
 
@@ -16,7 +16,7 @@
 
 ## 🎯 Aperçu
 
-BI Map est une application web cartographique permettant de visualiser et gérer les bouches d'incendie du département des Alpes-Maritimes. Elle offre des outils de recherche, de mesure et d'analyse pour les Sapeurs-Pompiers.
+BI-Map est une application web cartographique permettant de visualiser et gérer les bouches d'incendie du département des Alpes-Maritimes. Elle offre des outils de recherche, de mesure et d'analyse pour les Sapeurs-Pompiers.
 
 ## ✨ Fonctionnalités
 
