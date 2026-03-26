@@ -40,6 +40,13 @@ body {
   cursor: pointer;
 }
 
+.fab-options button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
 .fab-icon-holder {
   width: 50px;
   height: 50px;
