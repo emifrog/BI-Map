@@ -22,12 +22,12 @@ const SEARCH_CONFIG = {
 };
 
 /**
- * Fichiers de données hydrants à charger
+ * Fichiers de donnees hydrants a charger
  */
 const HYDRANT_FILES = ['data/nice.json', 'data/bv.json'];
 
 /**
- * Cache des éléments DOM fréquemment utilisés
+ * Cache des elements DOM frequemment utilises
  */
 const elements = {
     map: document.getElementById('map'),
@@ -36,7 +36,7 @@ const elements = {
 };
 
 /**
- * État global de l'application
+ * Etat global de l'application
  */
 const state = {
     isMeasuring: false,
@@ -58,13 +58,12 @@ const map = new mapboxgl.Map({
     maxBounds: MAP_CONFIG.maxBounds,
     minZoom: MAP_CONFIG.minZoom,
     maxZoom: MAP_CONFIG.maxZoom,
-    attributionControl: false,
-    preserveDrawingBuffer: true
+    attributionControl: false
 });
 
 elements.mapCanvas = map.getCanvas();
 
-// Contrôle de géolocalisation
+// Controle de geolocalisation
 const geolocateControl = new mapboxgl.GeolocateControl({
     positionOptions: {
         enableHighAccuracy: true
@@ -76,7 +75,25 @@ const geolocateControl = new mapboxgl.GeolocateControl({
 map.addControl(geolocateControl);
 
 /**
- * Charge et fusionne les données GeoJSON des hydrants
+ * Calcule la distance entre deux points GPS (formule Haversine)
+ * @param {number} lat1 - Latitude du point 1
+ * @param {number} lon1 - Longitude du point 1
+ * @param {number} lat2 - Latitude du point 2
+ * @param {number} lon2 - Longitude du point 2
+ * @returns {number} Distance en metres
+ */
+const haversineDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371000;
+    const toRad = (deg) => deg * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+/**
+ * Charge et fusionne les donnees GeoJSON des hydrants
  */
 const loadHydrants = async () => {
     try {
@@ -87,54 +104,157 @@ const loadHydrants = async () => {
             }))
         );
 
-        // Fusionner toutes les features dans un seul GeoJSON
         const merged = {
             type: 'FeatureCollection',
             features: responses.flatMap(data => data.features)
         };
 
-        addHydrantMarkers(merged);
+        addHydrantLayer(merged);
     } catch (error) {
         console.error('Erreur lors du chargement des hydrants:', error);
     }
 };
 
 /**
- * Ajoute les marqueurs HTML pour les hydrants
+ * Ajoute les hydrants via un symbol layer Mapbox avec clustering
  */
-const addHydrantMarkers = (geojson) => {
-    for (const feature of geojson.features) {
-        const el = document.createElement('div');
-        el.className = 'marker-bi';
+const addHydrantLayer = (geojson) => {
+    // Charger l'icone BI
+    map.loadImage('images/bi.png', (error, image) => {
+        if (error) {
+            console.error('Erreur chargement icone BI:', error);
+            return;
+        }
 
-        new mapboxgl.Marker(el)
-            .setLngLat(feature.geometry.coordinates)
-            .setPopup(
-                new mapboxgl.Popup({ offset: 25 })
-                    .setHTML(`<h3 class="namebi">${feature.properties.title}${feature.properties.num}</h3>`)
-            )
-            .addTo(map);
-    }
+        map.addImage('bi-icon', image);
+
+        // Source avec clustering
+        map.addSource('hydrants', {
+            type: 'geojson',
+            data: geojson,
+            cluster: true,
+            clusterMaxZoom: 16,
+            clusterRadius: 50
+        });
+
+        // Layer clusters (cercles regroupes)
+        map.addLayer({
+            id: 'clusters',
+            type: 'circle',
+            source: 'hydrants',
+            filter: ['has', 'point_count'],
+            paint: {
+                'circle-color': [
+                    'step', ['get', 'point_count'],
+                    '#2196F3', 10,
+                    '#1976D2', 30,
+                    '#0D47A1'
+                ],
+                'circle-radius': [
+                    'step', ['get', 'point_count'],
+                    15, 10,
+                    20, 30,
+                    25
+                ],
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#ffffff'
+            }
+        });
+
+        // Layer nombre dans les clusters
+        map.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'hydrants',
+            filter: ['has', 'point_count'],
+            layout: {
+                'text-field': '{point_count_abbreviated}',
+                'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            },
+            paint: {
+                'text-color': '#ffffff'
+            }
+        });
+
+        // Layer points individuels (icone BI)
+        map.addLayer({
+            id: 'unclustered-point',
+            type: 'symbol',
+            source: 'hydrants',
+            filter: ['!', ['has', 'point_count']],
+            layout: {
+                'icon-image': 'bi-icon',
+                'icon-size': 0.1,
+                'icon-allow-overlap': true
+            }
+        });
+
+        // Clic sur un cluster -> zoom
+        map.on('click', 'clusters', (e) => {
+            const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+            const clusterId = features[0].properties.cluster_id;
+            map.getSource('hydrants').getClusterExpansionZoom(clusterId, (err, zoom) => {
+                if (err) return;
+                map.easeTo({
+                    center: features[0].geometry.coordinates,
+                    zoom: zoom
+                });
+            });
+        });
+
+        // Clic sur un point individuel -> popup
+        map.on('click', 'unclustered-point', (e) => {
+            const feature = e.features[0];
+            const coordinates = feature.geometry.coordinates.slice();
+            const title = feature.properties.title || '';
+            const num = feature.properties.num || '';
+
+            new mapboxgl.Popup({ offset: 15 })
+                .setLngLat(coordinates)
+                .setHTML('<h3 class="namebi">' + escapeHTML(title) + escapeHTML(num) + '</h3>')
+                .addTo(map);
+        });
+
+        // Curseur pointer sur les clusters et points
+        map.on('mouseenter', 'clusters', () => {
+            elements.mapCanvas.style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'clusters', () => {
+            elements.mapCanvas.style.cursor = '';
+        });
+        map.on('mouseenter', 'unclustered-point', () => {
+            elements.mapCanvas.style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'unclustered-point', () => {
+            elements.mapCanvas.style.cursor = '';
+        });
+    });
 };
 
-// Chargement au démarrage
+/**
+ * Echappe les caracteres HTML pour prevenir les injections XSS
+ */
+const escapeHTML = (str) => {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+};
+
+// Chargement au demarrage
 map.on('load', () => {
-    // Géolocalisation
     if (navigator.geolocation) {
         geolocateControl.trigger();
     }
-
-    // Charger les hydrants
     loadHydrants();
 });
 
-// Gestion des erreurs de géolocalisation
 geolocateControl.on('error', (e) => {
-    console.warn('Géolocalisation indisponible:', e.message);
+    console.warn('Geolocalisation indisponible:', e.message);
 });
 
 /**
- * Initialise la fonctionnalité de recherche
+ * Initialise la fonctionnalite de recherche
  */
 const initSearch = () => {
     state.searchBox = new MapboxSearchBox();
@@ -155,16 +275,18 @@ const initSearch = () => {
 };
 
 /**
- * Gère le résultat d'une recherche
+ * Gere le resultat d'une recherche
  */
 const handleSearchResult = (event) => {
-    const coordinates = event.detail.features[0].geometry.coordinates;
+    const features = event.detail.features;
+    if (!features || !features.length) return;
+    const coordinates = features[0].geometry.coordinates;
     state.lastSearchCoordinates = coordinates;
     updateSearchRadiusLayers(coordinates);
 };
 
 /**
- * Met à jour les cercles de rayon de recherche
+ * Met a jour les cercles de rayon de recherche
  */
 const updateSearchRadiusLayers = (coordinates) => {
     removeSearchRadiusLayers();
@@ -241,7 +363,7 @@ const handleFireClick = () => {
 };
 
 /**
- * Active/désactive le mode mesure
+ * Active/desactive le mode mesure
  */
 const handleMesureClick = () => {
     state.isMeasuring = !state.isMeasuring;
@@ -261,22 +383,13 @@ const addMeasurePoint = (e) => {
     state.measurePoints.push(e.lngLat);
 
     if (state.measurePoints.length === 2) {
-        const distance = calculateDistance();
+        const p1 = state.measurePoints[0];
+        const p2 = state.measurePoints[1];
+        const distance = haversineDistance(p1.lat, p1.lng, p2.lat, p2.lng);
         drawMeasureLine();
         showDistancePopup(e.lngLat, distance);
         cleanupMeasure();
     }
-};
-
-/**
- * Calcule la distance entre deux points de mesure
- */
-const calculateDistance = () => {
-    return turf.distance(
-        turf.point([state.measurePoints[0].lng, state.measurePoints[0].lat]),
-        turf.point([state.measurePoints[1].lng, state.measurePoints[1].lat]),
-        { units: 'meters' }
-    );
 };
 
 /**
@@ -312,17 +425,17 @@ const drawMeasureLine = () => {
 };
 
 /**
- * Affiche une popup avec la distance mesurée
+ * Affiche une popup avec la distance mesuree
  */
 const showDistancePopup = (lngLat, distance) => {
     new mapboxgl.Popup()
         .setLngLat(lngLat)
-        .setHTML(`Distance: ${Math.round(distance)} mètres`)
+        .setHTML('Distance: ' + Math.round(distance) + ' m\u00e8tres')
         .addTo(map);
 };
 
 /**
- * Nettoie les éléments de mesure
+ * Nettoie les elements de mesure
  */
 const cleanupMeasure = () => {
     elements.mapCanvas.style.cursor = '';
@@ -332,7 +445,7 @@ const cleanupMeasure = () => {
 };
 
 /**
- * Centre la carte sur la dernière recherche
+ * Centre la carte sur la derniere recherche
  */
 const handleCentrerClick = () => {
     if (state.lastSearchCoordinates) {
@@ -342,8 +455,19 @@ const handleCentrerClick = () => {
             essential: true
         });
     } else {
-        alert('Aucune recherche effectuée');
+        showToast('Aucune recherche effectu\u00e9e');
     }
+};
+
+/**
+ * Affiche une notification non-bloquante (toast)
+ */
+const showToast = (message) => {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
 };
 
 // Initialisation de la recherche

@@ -23,9 +23,9 @@
         // Enregistrement du Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then(registration => {
-                        console.log('Service Worker enregistré avec succès:', registration.scope);
+                        console.log('Service Worker enregistre avec succes:', registration.scope);
                     })
                     .catch(error => {
                         console.error('Erreur lors de l\'enregistrement du Service Worker:', error);
@@ -37,13 +37,8 @@
     <!-- Scripts critiques -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
 
-    <!-- Styles non-critiques -->
-    <link href="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css" rel="stylesheet" media="print"
-        onload="this.media='all'">
-
     <!-- Scripts non-critiques avec defer -->
     <script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.22/web.js"></script>
-    <script defer src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
     <script defer src="https://kit.fontawesome.com/8d747dca8a.js" crossorigin="anonymous"></script>
 </head>
 
@@ -51,17 +46,16 @@
 
     <div id="map"></div>
     <div id="search-box-container">
-
         <div class="Suggestion"></div>
     </div>
     <div class="fab-container">
         <div class="fab fab-icon-holder">
-            <i class="fas fas fa-plus"></i>
+            <i class="fas fa-plus"></i>
         </div>
         <ul class="fab-options">
             <li>
                 <span class="fab-label">F.I.R.E</span>
-                <button class="fab-button-fire" onclick="handleFireClick()">
+                <button class="fab-button-fire" aria-label="Ouvrir les fiches F.I.R.E">
                     <div class="fab-icon-holder">
                         <i class="fas fa-fire"></i>
                     </div>
@@ -69,7 +63,7 @@
             </li>
             <li>
                 <span class="fab-label">Mesure</span>
-                <button class="fab-button-mesure" onclick="handleMesureClick()">
+                <button class="fab-button-mesure" aria-label="Activer l'outil de mesure de distance">
                     <div class="fab-icon-holder">
                         <i class="fas fa-ruler"></i>
                     </div>
@@ -77,15 +71,15 @@
             </li>
             <li>
                 <span class="fab-label">Centrer</span>
-                <button class="fab-button-centrer" onclick="handleCentrerClick()">
+                <button class="fab-button-centrer" aria-label="Centrer sur la derniere recherche">
                     <div class="fab-icon-holder">
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-crosshairs"></i>
                     </div>
                 </button>
             </li>
             <li>
                 <span class="fab-label">Contact</span>
-                <button class="fab-button-contact" onclick="window.location.href='contact.html'">
+                <button class="fab-button-contact" aria-label="Ouvrir le formulaire de contact">
                     <div class="fab-icon-holder">
                         <i class="fas fa-envelope"></i>
                     </div>
@@ -95,6 +89,14 @@
     </div>
 
     <script src="js/main.js"></script>
+    <script>
+        document.querySelector('.fab-button-fire').addEventListener('click', handleFireClick);
+        document.querySelector('.fab-button-mesure').addEventListener('click', handleMesureClick);
+        document.querySelector('.fab-button-centrer').addEventListener('click', handleCentrerClick);
+        document.querySelector('.fab-button-contact').addEventListener('click', () => {
+            window.location.href = 'contact.html';
+        });
+    </script>
 
 </body>
 
