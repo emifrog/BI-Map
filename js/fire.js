@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
             autocomBox.innerHTML = filteredSuggestions
                 .map(suggestion => {
                     const safeText = escapeHTML(suggestion.text);
-                    const safeUrl = encodeURI(suggestion.url);
-                    return '<li><a href="' + safeUrl + '">' + safeText + '</a></li>';
+                    const safeUrl = suggestion.url.replace(/"/g, '&quot;');
+                    return '<li><a href="' + safeUrl + '" target="_blank">' + safeText + '</a></li>';
                 })
                 .join('');
             autocomBox.style.display = 'block';
