@@ -1,5 +1,5 @@
 const CACHE_NAME = 'bi-map-cache-v3';
-const DATA_CACHE_NAME = 'bi-map-data-v1';
+const DATA_CACHE_NAME = 'bi-map-data-v2';
 const TILES_CACHE_NAME = 'bi-map-tiles-v1';
 
 // Ressources locales a pre-cacher
