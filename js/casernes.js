@@ -3,7 +3,7 @@
  */
 const loadCasernes = async () => {
     try {
-        const response = await fetch(SUPABASE_URL + '/rest/v1/casernes?select=name,lng,lat', {
+        const response = await fetch(SUPABASE_URL + '/rest/v1/Casernes?select=name,lng,lat', {
             headers: {
                 'apikey': SUPABASE_KEY,
                 'Authorization': 'Bearer ' + SUPABASE_KEY
@@ -24,7 +24,7 @@ const loadCasernes = async () => {
  * Ajoute les casernes via un symbol layer Mapbox
  */
 const addCasernesLayer = (data) => {
-    map.loadImage('images/casque.png', (error, image) => {
+    map.loadImage('images/casque.webp', (error, image) => {
         if (error) {
             console.error('Erreur chargement icone caserne:', error);
             return;
