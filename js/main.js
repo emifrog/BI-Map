@@ -214,6 +214,7 @@ map.on('load', () => {
         geolocateControl.trigger();
     }
     loadHydrants();
+    loadCasernes();
 });
 
 geolocateControl.on('error', (e) => {
