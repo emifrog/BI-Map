@@ -55,9 +55,15 @@ const addCasernesLayer = (data) => {
             id: 'casernes-layer',
             type: 'symbol',
             source: 'casernes',
+            minzoom: 12,
             layout: {
                 'icon-image': 'caserne-icon',
-                'icon-size': 0.12,
+                'icon-size': [
+                    'interpolate', ['linear'], ['zoom'],
+                    12, 0.04,
+                    14, 0.08,
+                    16, 0.12
+                ],
                 'icon-allow-overlap': true
             }
         });
